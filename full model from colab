@@ -1,0 +1,109 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# Load the Boston Housing dataset
+df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data', header=None, delimiter=r'\s+')
+
+# Assign column names
+df.columns = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
+
+# Save the data to a CSV file
+df.to_csv('boston_housing.csv', index=False)
+
+# Load the CSV file
+df = pd.read_csv('boston_housing.csv')
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the Boston Housing dataset
+df = pd.read_csv('boston_housing.csv')
+
+# Plot the distribution of the target variable (MEDV)
+plt.figure(figsize=(8, 6))
+sns.histplot(df['MEDV'], bins=20, kde=True)
+plt.title('Distribution of MEDV')
+plt.xlabel('MEDV')
+plt.ylabel('Frequency')
+plt.show()
+
+# Plot the correlation matrix of the features
+corr_matrix = df.drop('MEDV', axis=1).corr()
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', square=True)
+plt.title('Correlation Matrix of Features')
+plt.show()
+
+# Plot the scatter plots of the features against MEDV
+for feature in df.drop('MEDV', axis=1).columns:
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=feature, y='MEDV', data=df)
+    plt.title(f'Scatter Plot of {feature} vs MEDV')
+    plt.xlabel(feature)
+    plt.ylabel('MEDV')
+    plt.show()
+
+# Plot the bar chart of the feature importances for each model
+for name, model in models.items():
+    if hasattr(model, 'feature_importances_'):
+        feature_importances = model.feature_importances_
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x=df.drop('MEDV', axis=1).columns, y=feature_importances)
+        plt.title(f'Feature Importances for {name}')
+        plt.xlabel('Feature')
+        plt.ylabel('Importance')
+        plt.show()
+
+# Plot the prediction errors for each model
+for name, model in models.items():
+    y_pred = model.predict(X_test)
+    errors = y_test - y_pred
+    plt.figure(figsize=(8, 6))
+    sns.histplot(errors, bins=20, kde=True)
+    plt.title(f'Prediction Errors for {name}')
+    plt.xlabel('Error')
+    plt.ylabel('Frequency')
+    plt.show()
+
+# Preprocess the data
+X = df.drop('MEDV', axis=1)
+y = df['MEDV']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale the data
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Build the models
+models = {
+    'Linear Regression': LinearRegression(),
+    'Decision Tree Regression': DecisionTreeRegressor(),
+    'Random Forest Regression': RandomForestRegressor(),
+    'Support Vector Regression': SVR(),
+    'K-Nearest Neighbors Regression': KNeighborsRegressor(),
+    'Gradient Boosting Regression': GradientBoostingRegressor()
+}
+
+# Train the models
+for name, model in models.items():
+    model.fit(X_train, y_train)
+
+# Evaluate the models
+for name, model in models.items():
+    y_pred = model.predict(X_test)
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    print(f'{name} - MAE: {mae}, MSE: {mse}, R2: {r2}')
+
+
